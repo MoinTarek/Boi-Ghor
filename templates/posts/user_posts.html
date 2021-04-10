@@ -1,0 +1,58 @@
+
+{% extends 'base.html' %}
+<title>{{user}}</title>
+{% load custom_filters %}
+{% block content %}
+
+
+
+<div class="container">
+  <div class="row">
+    {% for post in user.post_author.all %}
+
+
+    <div class="col-sm-4">
+      <div class="card" style="width: 300px;height:580px";>
+        {% if post.post_image %}
+        <img src="/media/{{post.post_image}}" width="auto" height="200px" alt="Card image cap">
+        {%else%}
+        <img src="/static/images/mbook.jpg" class="card-img-top">
+        {%endif%}
+        <div class="card-body">
+          <h4 class="card-title">{{post.title}}</h4>
+          <p class="card-text">{{post.description|range_filter|linebreaks}}</p>
+          <p class="card-text">Post Type: <b>{{post.type}}</b></p>
+
+          {% if post.type == "Sale" %}
+          <p class="card-text">Condition: {{post.condition}}</p>
+          <p class="card-text">Price: {{post.price}} </p>
+
+          {% elif post.type == "Rent" %}
+          <p class="card-text">Rent Period: {{post.period}} days</p>
+
+          {% elif post.type == "Exchange" %}
+          <p class="card-text">Interested In: {{post.interest}}</p>
+
+          {% endif %}
+
+        <a href="/post/{{post.id}}"> <button type="button" class="btn btn-warning"name="button">View Details</button></a>
+        </div>
+      </div>
+    </div>
+
+
+
+    {% endfor %}
+
+
+
+
+  </div>
+
+</div>
+
+
+
+
+
+{% endblock %}

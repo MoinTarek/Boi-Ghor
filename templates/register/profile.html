@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+<title>User Profile</title>
+{% block content%}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-10 col-xl-9 mx-auto">
+        <div class="card card-signin flex-row my-5">
+            <div class="card-img-left d-none d-md-flex">
+                <!-- Background image for card set in CSS! -->
+            </div>
+            <div class="card-body">
+                <h5 class="card-title text-center">Profile</h5>
+                <div class="container">
+                {% if user.user_profile.profile_pic %}
+                <img src="/media/{{user.user_profile.profile_pic}}" class="rounded-circle" width="100px">
+                <br>
+                <br>
+                <a href="/change_profile_picture" class="btn btn-info btn-sm">Change Profile Picture</a>
+                <br>
+                <br>
+                {%else %}
+                <img src="/media/profile_pics/user_image.jpg" class="rounded-circle" width="100px">
+                <br>
+                <br>
+                <a href="/profile_picture" class="btn btn-info btn-sm">Add Profile Picture</a>
+                <br>
+                <br>
+                {%endif%}
+
+                <p>Username: <b>{{user}}</b></p>
+                <p>First Name: <b>{{user.first_name}}</b></p>
+                <p>Last Name: <b>{{user.last_name}}</b></p>
+                <p>Email: <b>{{user.email}}</b></p>
+
+                {% if user.user_profile.age%}
+                <p>Age: <b>{{user.user_profile.age}} years</b></p>
+                {% else %}
+                <p>Age: <b>Blank</b></p>
+                {% endif %}
+
+                {% if user.user_profile.location%}
+                <p>Location: <b>{{user.user_profile.location}}</b></p>
+                {% else %}
+                <p>Location:<b>Blank</b></p>
+                {% endif %}
+
+                {% if user.user_profile.phone%}
+                <p>Location: <b>{{user.user_profile.phone}}</b></p>
+                {% else %}
+                <p>Phone: <b>Blank</b></p>
+                {% endif %}
+
+
+                <a href="/edit_profile">Change Profile Info</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+{% endblock %}

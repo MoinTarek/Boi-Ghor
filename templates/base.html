@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Custom CSS -->
+    {% load cart_tag %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <!-- Load an icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/3280dc4d00.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <header>
+      <div class="container">
+          <div class="row bg-dark">
+            <div class="col-md-4 col-sm-12 col-12">
+              <div class="btn-group">
+                <button
+                  class="btn border dropdown-toggle my-md-4 my-2"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  style="color:white">Browse Categories
+                </button>
+                <div class="dropdown-menu">
+                  <a href="/arts" class="dropdown-item">Arts and Photography</a>
+                  <a href="#" class="dropdown-item">Biographies</a>
+                  <a href="#" class="dropdown-item">Business</a>
+                  <a href="#" class="dropdown-item">Children Books</a>
+                  <a href="#" class="dropdown-item">Comics</a>
+                  <a href="#" class="dropdown-item">Politics</a>
+                </div>
+
+
+
+              </div>
+
+            </div>
+
+
+
+          <div class="col-md-4 col-12 text-center">
+              <h2 class="my-md-3 site-title" style="color:white">BookWorms</h2>
+          </div>
+
+
+        {% if user.is_authenticated %}
+
+          <div class="col-md-4 col-sm-12 col-12 text-right">
+
+            <li class="nav-item ">
+              <a href="{% url 'App_Order:cart' %}" >
+              <i class="fa fa-shopping-cart "></i> Cart
+              <span class="badge badge-light">{{ request.user | cart_total }}</span>
+          </a>
+        </li>
+            <div class="btn-group">
+              <button
+                class="btn border dropdown-toggle my-md-4 my-2"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                style="color:white">Profile
+              </button>
+              <div class="dropdown-menu">
+                <a href="/profile" class="dropdown-item">View Profile</a>
+                <a href="/my_posts" class="dropdown-item">My Posts</a>
+                <a href="{% url 'App_Payment:orders' %}" class="dropdown-item" >My Orders</a>
+                <a href="/pass_change" class="dropdown-item">Change Password</a>
+                <a href="/logout" class="dropdown-item">Logout</a>
+
+              </div>
+
+
+
+            </div>
+
+          </div>
+
+
+
+          {%else %}
+          <div class="col-md-4 col-12 text-right">
+                <p class="my-md-4 header-links">
+              <a href="/login" class="px-2" style="color:white">Sign In</a>
+              <a href="/register" class="px-1" style="color:white">Create an Account</a>
+              {%endif%}
+            </p>
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+
+      <div class="container bg-light p-0">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only" >(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/createpost">Create Trade Post</a>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Shops
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/shop">BaatiGhar</a>
+          <a class="dropdown-item" href="#">Shop B</a>
+          <a class="dropdown-item" href="#">Shop C</a>
+          <a class="dropdown-item" href="#">Shop D</a>
+      </li>
+
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Blog
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/blog/write">Create New Blog</a>
+          <a class="dropdown-item" href="/blog">Blog Home </a>
+      </li>
+
+
+      <li class="nav-item">
+        <a class="nav-link" href="/contact">Contact</a>
+      </li>
+
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+      </div>
+
+
+    </header>
+{% block content %}
+
+
+{% endblock %}
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+
+    {% block script %}
+
+    {% endblock %}
+
+</body>
+
+<!-- Footer -->
+<footer class="bg-dark">
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3 text-white">
+        <h6> © 2020 Copyright: <br> Bookworms™</h6>
+    </div>
+    <!-- Copyright -->
+
+
+
+</footer>
+<!-- Footer -->
+
+</html>

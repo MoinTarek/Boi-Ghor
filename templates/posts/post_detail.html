@@ -1,0 +1,150 @@
+<title>Post Details</title>
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+{% load crispy_forms_tags %}
+    <!-- Main content -->
+    <div class="container shadow">
+
+        <div class="row">
+
+            <!-- Blog Entries Column -->
+            <div class="col-md-8">
+
+              <h2 class="my-4">{{post.type}} Details
+
+              </h2>
+
+                <!-- Blog Post -->
+                <div class="card mb-4">
+                  {% if post.post_image %}
+                    <img src="/media/{{post_image}}" width="200px" height="200px" alt="Card image cap">
+                  {%else%}
+                    <img class="card-img-top" src="/static/images/mbook.jpg" width="200px" height="200px" alt="Card image cap">
+                  {% endif %}
+                    <div class="card-body">
+
+                        {% if post.type == 'Sale' %}
+                        <h3 class="card-title">{{post.title}}</h3>
+                        <p class="card-text">
+                            {{post.description}}<br><br>
+                            Address: {{post.address}} <br><br>
+                            Condition: {{post.condition}}<br><br>
+                            Price: {{post.price}} tk<br><br>
+
+
+                        {% elif post.type == 'Rent' %}
+                        <h3 class="card-title">{{post.title}}</h3>
+                        <p class="card-text">
+                            {{post.description}}<br><br>
+                            Address: {{post.address}} <br><br>
+                            Rent Period: {{post.period}} days<br><br>
+
+
+                            {% elif post.type == 'Exchange' %}
+                            <h3 class="card-title">{{post.title}}</h3>
+                            <p class="card-text">
+                                {{post.description}}<br><br>
+                                Address: {{post.address}} <br><br>
+                                Interested in: {{post.interest}}<br><br>
+
+
+
+                        {%endif%}
+
+
+                            <a href="/messages/{{post.author}}"> <button type="button" class="btn btn-warning"name="button">Message</button></a>
+                    
+                        </p>
+
+                    </div>
+                    <div class="card-footer text-muted">
+                        Posted on {{post.published_date}} by
+                        <a href="#">{{post.author}}</a>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-6">
+                  <hr>
+                  <h5>Comments:</h5>
+                  {% for comment in post.post_comment.all %}
+                  <p> <a href="#">@{{comment.user}}</a> {{comment.comment}} <br> <h6>{{comment.comment_date}}</h6> </p>
+                  {% endfor %}
+                  <br>
+                  <br>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="col-sm-6">
+                  <form method="POST">
+                      {{comment_form|crispy}}
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+                  </form>
+
+                </div>
+
+                {%else%}
+                <div class="container">
+                    <h6>You have to be logged in to comment</h6>
+                    <hr>
+                    <br>
+                </div>
+
+                {%endif%}
+                          <!-- Blog Post -->
+            </div>
+
+            <!-- Sidebar Widgets Column -->
+            <div class="col-md-4">
+
+                <!-- Search Widget -->
+
+
+                <!-- Categories Widget -->
+                <div class="card my-4">
+                    <h5 class="card-header">Categories</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li>
+                                        <a href="#">CSE</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">EEE</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Story</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li>
+                                        <a href="#">Poem</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Comics</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">BBA</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.row -->
+
+    </div>
+
+{% endblock %}
+
+</html>

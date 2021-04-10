@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+<title>Change Profile</title>
+{% block content%}
+{%load crispy_forms_tags %}
+
+
+
+<form method="POST">
+{{form|crispy}}
+{%csrf_token%}
+<button type="submit" name="button">Update</button>
+</form>
+
+
+
+
+
+
+
+{% endblock %}
