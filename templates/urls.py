@@ -1,13 +1,12 @@
+from . import views
 from django.urls import path
-from App_Order import views
 
-app_name = 'App_Order'
+app_name='blog'
 
 urlpatterns = [
-            path('add/<pk>/', views.add_to_cart, name="add"),
-            path('remove/<pk>/', views.remove_from_cart, name="remove"),
-
-            path('cart/', views.cart_view, name="cart"),
-            path('increase/<pk>/', views.increase_cart, name="increase"),
-            path('decrease/<pk>/', views.decrease_cart, name="decrease"),
+    path('blog/', views.BlogList.as_view(), name='blog_list'),
+    path('blog/write/', views.CreateBlog.as_view(), name='create_blog'),
+    path('blog/details/<slug:slug>', views.Blog_Details, name='blog_detail'),
+    path('blog/liked/<pk>/', views.liked, name='liked_post'),
+    path('blog/unliked/<pk>/', views.unliked, name='unliked_post'),
 ]

@@ -1,0 +1,101 @@
+{% extends 'base.html'%}
+
+
+{%load crispy_forms_tags%}
+{% block content %}
+
+
+<div class="container">
+
+
+<div class="row">
+
+  <div class="col-sm-6">
+    <br>
+
+    <h2>{{blog.blog_title}}</h2>
+    <h4>Posted By: @{{blog.author}} </h4>
+    <i> <h6>Published on: {{blog.created_on}}</h6> </i>
+    <h6>{{blog.liked_blog.count}} Likes|{{blog.blog_post_comment.count}} Comments</h6>
+  </div>
+
+
+
+<div class="container">
+<hr>
+<p>{{blog.content}}</p>
+<hr>
+
+{% if not liked%}
+<a href="{% url 'blog:liked_post' pk=blog.pk %}">
+<i class="fa fa-thumbs-o-up fa-2x" aria-hidden="true"></i>
+</a>
+{%else%}
+<a href="{% url 'blog:unliked_post' pk=blog.pk %}">
+<i class="fa fa-thumbs-o-down fa-2x" aria-hidden="false"></i>
+</a>
+
+{%endif%}
+<br>
+<br>
+</div>
+
+
+
+
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <h5>Comments</h5>
+        {% for comment in blog.blog_post_comment.all%}
+        <p> <a href="#">@{{comment.user}}</a> {{comment.blog_comment}}<br><h6>{{comment.blog_comment_date}}</h6> </p>
+        {%endfor%}
+
+    </div>
+    </div>
+
+  </div>
+
+  {% if user.is_authenticated %}
+  <div class="col-sm-6">
+    <form method="POST">
+        {{comment_form|crispy}}
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+    </form>
+
+  </div>
+
+  {%else%}
+  <div class="container">
+      <h6>You have to be logged in to comment</h6>
+      <hr>
+      <br>
+  </div>
+
+  {%endif%}
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

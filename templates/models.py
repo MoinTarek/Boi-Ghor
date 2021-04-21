@@ -1,37 +1,56 @@
 from django.db import models
+from django.contrib import admin
+from django.contrib.auth.models import User
 from django.conf import settings
+from django.utils import timezone
 
-# Model
-from App_Shop.models import Product
-# Create your models here.
 
-class Cart(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    item = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    purchased = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+
+STATUS = (
+    (0,"Draft"),
+    (1,"Publish")
+)
+
+class BlogPost(models.Model):
+    author = models.ForeignKey(User, on_delete= models.CASCADE,related_name='blog_post_author')
+    blog_title = models.CharField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True)
+    updated_on = models.DateTimeField(auto_now= True)
+    content = models.TextField(verbose_name="What is on your mind?")
+    blog_image=models.ImageField(upload_to='blog_images',null=True,blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on=models.DateTimeField(auto_now_add=True)
+    status = models.IntegerField(choices=STATUS, default=0)
+
+    class Meta:
+        ordering = ['-created_on']
 
     def __str__(self):
-        return f'{self.quantity} X {self.item}'
-
-    def get_total(self):
-        total = self.item.price * self.quantity
-        float_total = format(total, '0.2f')
-        return float_total
+        return self.blog_title
 
 
-class Order(models.Model):
-    orderitems = models.ManyToManyField(Cart)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    ordered = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now_add=True)
-    paymentId = models.CharField(max_length=264, blank=True, null=True)
-    orderId = models.CharField(max_length=200, blank=True, null=True)
 
-    def get_totals(self):
-        total = 0
-        for order_item in self.orderitems.all():
-            total += float(order_item.get_total())
-        return total
+class BlogComment(models.Model):
+    blog_post=models.ForeignKey(BlogPost,on_delete=models.CASCADE,related_name='blog_post_comment')
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='blog_user_comment')
+    blog_comment=models.TextField()
+    blog_comment_date=models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering=('-blog_comment_date',)
+
+
+    def __str__(self):
+        return self.blog_comment
+
+
+
+
+class Likes(models.Model):
+    blog=models.ForeignKey(BlogPost,on_delete=models.CASCADE,related_name='liked_blog')
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='liked_user')
+
+
+
+    def __str__(self):
+        return self.user+ " likes " + self.blog

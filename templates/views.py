@@ -1,114 +1,87 @@
-from django.shortcuts import render, get_object_or_404, redirect
-
-from django.contrib.auth.decorators import login_required
-
-from App_Order.models import Cart, Order
-from App_Shop.models import Product
-from django.contrib import messages
+from django.shortcuts import render,get_object_or_404
 # Create your views here.
+from django.shortcuts import HttpResponseRedirect,reverse,redirect
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+from .models import BlogPost,BlogComment,Likes
+from .forms import BlogCommentForm
+from django.contrib.auth.models import User
+from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import UpdateView,CreateView,UpdateView,ListView,DetailView,View,TemplateView,DeleteView
+import uuid
 
-@login_required
-def add_to_cart(request, pk):
-    item = get_object_or_404(Product, pk=pk)
-    print("Item")
-    print(item)
-    order_item = Cart.objects.get_or_create(item=item, user=request.user, purchased=False)
-    print("Order Item Object:")
-    print(order_item)
-    print(order_item[0])
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-    print("Order Qs:")
-    print(order_qs)
-    #print(order_qs[0])
-    if order_qs.exists():
-        order = order_qs[0]
-        print("If Order exist")
-        print(order)
-        if order.orderitems.filter(item=item).exists():
-            order_item[0].quantity += 1
-            order_item[0].save()
-            messages.info(request, "This item quantity was updated.")
-            return redirect("App_Shop:home")
-        else:
-            order.orderitems.add(order_item[0])
-            messages.info(request, "This item was added to your cart.")
-            return redirect("App_Shop:home")
+
+
+
+class CreateBlog(LoginRequiredMixin,CreateView):
+    model=BlogPost
+    template_name='blog/create_blog.html'
+    fields = ('blog_title','content','status')
+
+
+    def form_valid(self,form):
+        blog_obj=form.save(commit=False)
+        blog_obj.author=self.request.user
+        title=blog_obj.blog_title
+        blog_obj.slug=title.replace(" ","-") + "-"+str(uuid.uuid4())
+        blog_obj.save()
+        return redirect("/blog/")
+        #return HttpResponseRedirect(reverse('blog_list'))
+
+
+
+
+class BlogList(ListView):
+    context_object_name='blogs'
+    model=BlogPost
+    template_name='blog/blog_home.html'
+
+
+
+
+
+
+def Blog_Details(request,slug):
+    blog=BlogPost.objects.get(slug=slug)
+    comment_form=BlogCommentForm()
+    already_liked=Likes.objects.filter(blog=blog,user=request.user)
+    if already_liked:
+        liked= True
     else:
-        order = Order(user=request.user)
-        order.save()
-        order.orderitems.add(order_item[0])
-        messages.info(request, "This item was added to your cart.")
-        return redirect("App_Shop:home")
-@login_required
-def cart_view(request):
-    carts = Cart.objects.filter(user=request.user, purchased=False)
-    orders = Order.objects.filter(user=request.user, ordered=False)
-    if carts.exists() and orders.exists():
-        order = orders[0]
-        return render(request, 'App_Order/cart.html', context={'carts':carts, 'order':order})
-    else:
-        messages.warning(request, "You don't have any item in your cart!")
-        return redirect("App_Shop:home")
-@login_required
-def remove_from_cart(request, pk):
-    item = get_object_or_404(Product, pk=pk)
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-    if order_qs.exists():
-        order = order_qs[0]
-        if order.orderitems.filter(item=item).exists():
-            order_item = Cart.objects.filter(item=item, user=request.user, purchased=False)[0]
-            order.orderitems.remove(order_item)
-            order_item.delete()
-            messages.warning(request, "This item was removed form your cart")
-            return redirect("App_Order:cart")
-        else:
-            messages.info(request, "This item was not in your cart.")
-            return redirect("App_Shop:home")
-    else:
-        messages.info(request, "You don't have an active order")
-        return redirect("App_Shop:home")
-@login_required
-def increase_cart(request, pk):
-    item = get_object_or_404(Product, pk=pk)
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-    if order_qs.exists():
-        order = order_qs[0]
-        if order.orderitems.filter(item=item).exists():
-            order_item = Cart.objects.filter(item=item, user=request.user, purchased=False)[0]
-            if order_item.quantity >= 1:
-                order_item.quantity += 1
-                order_item.save()
-                messages.info(request, f"{item.name} quantity has been updated")
-                return redirect("App_Order:cart")
-        else:
-            messages.info(request, f"{item.name} is not in your cart")
-            return redirect("App_Shop:home")
-    else:
-        messages.info(request, "You don't have an active order")
-        return redirect("App_Shop:home")
+        liked=False
+
+    if request.method=="POST":
+        comment_form=BlogCommentForm(request.POST)
+        if comment_form.is_valid():
+            comment=comment_form.save(commit=False)
+            comment.user=request.user
+            comment.blog_post=blog
+            comment.comment_date=timezone.now()
+            comment.save()
+            return HttpResponseRedirect(reverse('blog:blog_detail',kwargs={'slug':slug}))
+
+    return render(request,'blog/blog_details.html',context={'blog':blog,'comment_form':comment_form,'liked':liked})
+
+
 
 
 @login_required
-def decrease_cart(request, pk):
-    item = get_object_or_404(Product, pk=pk)
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-    if order_qs.exists():
-        order = order_qs[0]
-        if order.orderitems.filter(item=item).exists():
-            order_item = Cart.objects.filter(item=item, user=request.user, purchased=False)[0]
-            if order_item.quantity > 1:
-                order_item.quantity -= 1
-                order_item.save()
-                messages.info(request, f"{item.name} quantity has been updated")
-                return redirect("App_Order:cart")
-            else:
-                order.orderitems.remove(order_item)
-                order_item.delete()
-                messages.warning(request, f"{item.name} item has been removed from your cart")
-                return redirect("App_Order:cart")
-        else:
-            messages.info(request, f"{item.name} is not in your cart")
-            return redirect("App_Shop:home")
-    else:
-        messages.info(request, "You don't have an active order")
-        return redirect("App_Shop:home")
+def liked(request,pk):
+    blog=BlogPost.objects.get(pk=pk)
+    user=request.user
+    already_liked=Likes.objects.filter(blog=blog,user=user)
+
+    if not already_liked:
+        liked_post=Likes(blog=blog,user=user)
+        liked_post.save()
+        return HttpResponseRedirect(reverse('blog:blog_detail',kwargs={'slug':blog.slug}))
+
+
+@login_required
+def unliked(request,pk):
+    blog=BlogPost.objects.get(pk=pk)
+    user=request.user
+    already_liked=Likes.objects.filter(blog=blog,user=user)
+    already_liked.delete()
+    return HttpResponseRedirect(reverse('blog:blog_detail',kwargs={'slug':blog.slug}))
